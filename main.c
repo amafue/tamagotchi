@@ -46,38 +46,29 @@ int main(int argc, char **argv)
         "      /    𝇌♡𝇋   \\",
     };
 
+    char (*selected_cat)[50];
+
     if (is_happy)
     {
-        for(int i = 0; i<3; i++){
-            printw("%s\n",happy_cat[i]);
-        };
+        selected_cat = happy_cat;
     } else if (is_hungry)
     {
-        for(int i = 0; i<3; i++){
-            printw("%s\n",hungry_cat[i]);
-        };
+        selected_cat = hungry_cat;
     } else if (is_sleep)
     {
-        for(int i = 0; i<3; i++){
-            printw("%s\n",sleep_cat[i]);
-        };
+        selected_cat = sleep_cat;
     } else if (is_stress)
     {
-        for(int i = 0; i<3; i++){
-            printw("%s\n",stress_cat[i]);
-        };
+        selected_cat = stress_cat;
     } else
     {
-        for(int i = 0; i<3; i++){
-            printw("%s\n",default_cat[i]);
-        };
+        selected_cat = default_cat;
     }
-    
-    
-    
-    
-    
 
+    for(int i = 0; i<3; i++){
+            printw("%s\n",selected_cat[i]);
+        };
+    
     refresh();  //push changes to the visible screen
 
     getch();    //wait for user input
