@@ -22,8 +22,9 @@ int main(int argc, char **argv)
     int menu_selected = 0;  //tracks which menu option is currently highlighted
     int game_selected = 0;
     int input = 0;  //stores key int code returned by getch()
+    int choice = -1;
 
-    const char *main_menu[MENU_COUNT] = {   //array of pointer addresses OJO
+    const char *choices[] = {   //array of pointer addresses OJO
         "New Game",
         "Continue",
         "Quit"
@@ -77,11 +78,11 @@ int main(int argc, char **argv)
                 if (i == menu_selected)
                 {
                     attron(A_REVERSE);  //inverts foreground and background text colors
-                    mvprintw(3+i, 4, "> %s <", main_menu);
+                    mvprintw(3+i, 4, "> %s <", choices[i]);
                     attroff(A_REVERSE); //clears inverted color, return to normal text styling
                 }else
                 {
-                    mvprintw(3+i, 6, "%s", main_menu[i]);
+                    mvprintw(3+i, 6, "%s", choices[i]);
                 }
             }
 
@@ -90,12 +91,44 @@ int main(int argc, char **argv)
 
             input = getch();
 
-            
+            switch (input)
+            {
+            case KEY_UP:
+                menu_selected--;    //go to back one index
+                if (menu_selected < 0)  //if index goes from 0 to -1
+                {
+                    menu_selected = MENU_COUNT - 1; //go to last index (2 in this case)
+                }
+                break;
+
+            case KEY_DOWN:
+                menu_selected++;
+                if (menu_selected >= MENU_COUNT)
+                {
+                    menu_selected = 0;
+                }
+                break;
+
+            case 10:
+            case KEY_ENTER:
+                choice = menu_selected;
+
+                if (choice == 2)
+                {
+                    endwin();
+                    return 0;
+                } 
+                    
+                mvprintw(9,2,"You selected: %s\n", choices[choice]);
+                refresh();  //updates the terminal
+                getch();    //waits for user to press a key
+            default:    
+                break;
+            }
+
         }
         
     }
-    
-
 
     char (*selected_cat)[50] = default_cat;   //pointer to the array
 
@@ -125,5 +158,6 @@ int main(int argc, char **argv)
     // getch();    //wait for user input
 
     endwin();    //leave ncurses mode
+    return 0;
 
 }
