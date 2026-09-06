@@ -5,7 +5,7 @@
 #define MENU_COUNT 3
 #define ACTION_COUNT 3
 #define STATE_MENU 0
-#define STATE_GAME 0
+#define STATE_GAME 1
 
 int main(int argc, char **argv)
 {
@@ -65,6 +65,28 @@ int main(int argc, char **argv)
         "      /    𝇌♡𝇋   \\",
     };
 
+    char (*selected_cat)[50] = default_cat;   //pointer to the array
+
+    if (is_happy)
+    {
+        selected_cat = happy_cat;
+    } else if (is_hungry)
+    {
+        selected_cat = hungry_cat;
+    } else if (is_sleep)
+    {
+        selected_cat = sleep_cat;
+    } else if (is_stress)
+    {
+        selected_cat = stress_cat;
+    } else
+    {
+        selected_cat = default_cat;
+    }
+
+    for(int i = 0; i<3; i++){
+        printw("%s\n",selected_cat[i]);
+    };
 
     while (1)
     {
@@ -117,41 +139,35 @@ int main(int argc, char **argv)
                 {
                     endwin();
                     return 0;
-                } 
-                    
+                }else if (choice == 1)
+                {
+                    state = STATE_GAME;
+
+                } else if (choice == 0)
+                {
+                    /* code */
+                }
+                 
                 mvprintw(9,2,"You selected: %s\n", choices[choice]);
                 refresh();  //updates the terminal
                 getch();    //waits for user to press a key
+                endwin();
             default:    
                 break;
             }
 
+        } else if (state == STATE_GAME)
+        {
+            mvprintw(1,2,"Your pet:\n\n\n");
+            for(int i = 0; i<3; i++){
+                printw("%s\n",selected_cat[i]);
+            };
         }
         
+        refresh();
+        input = getch();
     }
-
-    char (*selected_cat)[50] = default_cat;   //pointer to the array
-
-    if (is_happy)
-    {
-        selected_cat = happy_cat;
-    } else if (is_hungry)
-    {
-        selected_cat = hungry_cat;
-    } else if (is_sleep)
-    {
-        selected_cat = sleep_cat;
-    } else if (is_stress)
-    {
-        selected_cat = stress_cat;
-    } else
-    {
-        selected_cat = default_cat;
-    }
-
-    for(int i = 0; i<3; i++){
-            printw("%s\n",selected_cat[i]);
-        };
+    
     
     refresh();  //push changes to the visible screen
 
