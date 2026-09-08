@@ -7,18 +7,22 @@
 #define ACTION_COUNT 3
 #define STATE_MENU 0
 #define STATE_GAME 1
+#define GAME_BTNS 4
+#define STATE_QUIT 2
 
 char pet_name[50];
 int hunger;
 int happiness;
 int stress;
+int draw_menu(void);
 
 int main(int argc, char **argv)
 {
     void load_game(void);
     void update_game(void);
     void new_game(void);
-    void draw_game(char pet_name[], int hunger, int happiness, int stress);
+    int draw_game(char pet_name[], int hunger, int happiness, int stress);
+    
 
     setlocale(LC_ALL, "");  //enables c to process nnon standard char
 
@@ -27,96 +31,24 @@ int main(int argc, char **argv)
     noecho();   //disables automatic printing of keys
     curs_set(0);    //hide blinking cursor
     keypad(stdscr, TRUE);   //enables capture special keys input, like arrow keys
-
+ 
     int state = STATE_MENU; //remembers which is screen is active (menu/game)
-    int menu_selected = 0;  //tracks which menu option is currently highlighted
-    int game_selected = 0;
     int input = 0;  //stores key int code returned by getch()
-    int choice = -1;
 
-    const char *choices[] = {   //array of pointer addresses
-        "New Game",
-        "Continue",
-        "Quit"
-    };
-
-    while (1)
+    while (state != STATE_QUIT)
     {
         clear();
 
         if (state== STATE_MENU)
         {
-            mvprintw(1,2,"Virtual Pet Menu");
-            for (int i = 0; i < MENU_COUNT; i++)
-            {
-                if (i == menu_selected)
-                {
-                    attron(A_REVERSE);  //inverts foreground and background text colors
-                    mvprintw(3+i, 4, "> %s <", choices[i]);
-                    attroff(A_REVERSE); //clears inverted color, return to normal text styling
-                }else
-                {
-                    mvprintw(3+i, 6, "%s", choices[i]);
-                }
-            }
-
-            mvprintw(8, 2, "UP/DOWN arrows to move, ENTER to select");
-            refresh();
-
-            input = getch();
-
-            switch (input)
-            {
-            case KEY_UP:
-                menu_selected--;    //go to back one index
-                if (menu_selected < 0)  //if index goes from 0 to -1
-                {
-                    menu_selected = MENU_COUNT - 1; //go to last index (2 in this case)
-                }
-                break;
-
-            case KEY_DOWN:
-                menu_selected++;
-                if (menu_selected >= MENU_COUNT)
-                {
-                    menu_selected = 0;
-                }
-                break;
-
-            case 10:
-            case KEY_ENTER:
-                choice = menu_selected;
-
-                if (choice == 2)
-                {
-                    endwin();
-                    return 0;
-                }else if (choice == 1)
-                {
-                    load_game();
-                    state = STATE_GAME;
-
-                } else if (choice == 0)
-                {
-                    new_game();
-                    state = STATE_GAME;
-                }
-                 
-                mvprintw(9,2,"You selected: %s\n", choices[choice]);
-                refresh();  //updates the terminal
-                getch();    //waits for user to press a key
-                endwin();
-            default:    
-                break;
-            }
+            state = draw_menu();
 
         } else if (state == STATE_GAME)
         {
-            draw_game(pet_name, hunger, happiness, stress);
+            state = draw_game(pet_name, hunger, happiness, stress);
         }
         
         refresh();
-        input = getch();
     }
     
     
@@ -131,6 +63,12 @@ int main(int argc, char **argv)
 
 void load_game(void){
     FILE *file = fopen("gameplay.txt", "r");
+
+    if (file == NULL) return;
+    {
+        /* code */
+    }
+    
 
     char text[150];
     
@@ -154,12 +92,29 @@ void save_game(void){
 }
 
 void new_game(void){
-    int hunger = 100;
-    int happiness = 100;
-    int stress = 100;
+    hunger = 100;
+    happiness = 100;
+    stress = 100;
 }
 
-void draw_game(char pet_name[], int hunger, int happiness, int stress){
+int draw_game(char pet_name[], int hunger, int happiness, int stress){
+
+    keypad(stdscr, TRUE);
+    cbreak();   
+    noecho();  
+    curs_set(0);   
+
+    static int btn_selected = 0;
+    int choice = -1;
+    int input = 0;
+
+    const char *choices[] = {
+        "Feed",
+        "Mini Game",
+        "Sleep",
+        "Quit"
+    };
+
     bool is_happy = false;
     bool is_hungry = false;
     bool is_sleep = false;
@@ -218,9 +173,142 @@ void draw_game(char pet_name[], int hunger, int happiness, int stress){
         mvprintw(i+3,28,"%s\n",selected_cat[i]);
     };
 
-    mvprintw(1,5,"Name: %s", pet_name);
-    mvprintw(1,25,"Hunger: %d", hunger);
-    mvprintw(1,45,"Happiness: %d", happiness);
-    mvprintw(1,65,"Energi: %d", stress);
+    mvprintw(1,0,"Name: %s", pet_name);
+    mvprintw(1,20,"Hunger: %d", hunger);
+    mvprintw(1,40,"Happiness: %d", happiness);
+    mvprintw(1,60,"Energi: %d", stress);
 
+    for (int i = 0; i < GAME_BTNS; i++)
+    {
+        if (i == btn_selected)
+        {
+            attron(A_REVERSE);  //inverts foreground and background text colors
+            mvprintw(8, i*20, "> %s <", choices[i]);
+            attroff(A_REVERSE); //clears inverted color, return to normal text styling
+        }else
+        {
+            mvprintw(8, i*20, "%s", choices[i]);
+        }
+    }
+
+    refresh();
+
+    input =getch();
+
+    switch (input)
+    {
+        case KEY_LEFT:
+            btn_selected--;    //go to back one index
+            if (btn_selected < 0)  //if index goes from 0 to -1
+            {
+                btn_selected = GAME_BTNS - 1; //go to last index (2 in this case)
+            }
+            break;
+
+        case KEY_RIGHT:
+            btn_selected++;    //go to back one index
+            if (btn_selected >= GAME_BTNS)  //if index goes from 0 to -1
+            {
+                btn_selected = 0; //go to last index (2 in this case)
+            }
+            break;
+        
+        case 10:
+            case KEY_ENTER:
+                choice = btn_selected;
+
+                if (choice == 3)
+                {
+                    return STATE_MENU;
+
+                }
+                
+                    
+                mvprintw(10,0,"You selected: %s\n", choices[btn_selected]);
+                refresh();
+                break;
+
+        default:
+            break;
+    }
+
+    return STATE_GAME;
+}
+
+int draw_menu(void){
+
+    keypad(stdscr, TRUE);
+    cbreak();   
+    noecho();  
+    curs_set(0); 
+
+    static int menu_selected = 0;  //tracks which menu option is currently highlighted
+    int input = 0;  //stores key int code returned by getch()
+    int choice = -1;
+
+    const char *choices[] = {   //array of pointer addresses
+        "New Game",
+        "Continue",
+        "Quit"
+    };
+
+    mvprintw(1,2,"Virtual Pet Menu");
+    for (int i = 0; i < MENU_COUNT; i++)
+    {
+        if (i == menu_selected)
+        {
+            attron(A_REVERSE);  //inverts foreground and background text colors
+            mvprintw(3+i, 4, "> %s <", choices[i]);
+            attroff(A_REVERSE); //clears inverted color, return to normal text styling
+        }else
+        {
+            mvprintw(3+i, 6, "%s", choices[i]);
+        }
+    }
+
+    mvprintw(8, 2, "UP/DOWN arrows to move, ENTER to select");
+    refresh();
+
+    input = getch();
+
+    switch (input)
+    {
+    case KEY_UP:
+        menu_selected--;    //go to back one index
+        if (menu_selected < 0)  //if index goes from 0 to -1
+        {
+            menu_selected = MENU_COUNT - 1; //go to last index (2 in this case)
+        }
+        break;
+
+    case KEY_DOWN:
+        menu_selected++;
+        if (menu_selected >= MENU_COUNT)
+        {
+            menu_selected = 0;
+        }
+        break;
+
+    case 10:
+    case KEY_ENTER:
+        choice = menu_selected;
+
+        if (choice == 2)
+        {
+            return STATE_QUIT;    
+        return 0;
+        }else if (choice == 1)
+        {
+            load_game();
+            return STATE_GAME;
+
+        } else if (choice == 0)
+        {
+            new_game();
+            return STATE_GAME;
+        }
+    default:    
+        break;
+    }
+    return STATE_MENU;
 }
