@@ -2,6 +2,9 @@
 #include <ncurses.h>
 #include <locale.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "save.h"
 #include "pet.h"
@@ -178,16 +181,56 @@ int draw_game(void){
                     is_sleep=false;
                 }else if (choice == 1)
                 {
-                    //minigame
-                    happiness=100;
                     is_sleep=false;
+                    int next_n = (rand()%9)+1;
+                    int n = (rand()%9)+1;
+                    char right_ans;
+
+                    if (next_n > n)
+                    {
+                        right_ans = 'h';
+                    }else if (next_n < n)
+                    {
+                        right_ans = 'l';
+                    }
+
+                    mvprintw(10,0,"Will the next number be higher[h] or lower[l] than %d:\n", n);
+                    refresh();
+
+                    nodelay(stdscr, FALSE);
+                    int user_ans = getch();
+            
+                    if (user_ans == right_ans)
+                    {
+                        mvprintw(12,0,"That's right! (+10 happines)");
+                        
+                        if (happiness+10>100)
+                        {
+                            happiness=100;
+                        }else{
+                            happiness+=10;
+                        }
+                        
+                    } else
+                    {
+                        mvprintw(12,0,"That's wrong! (-5 energi)");
+                        stress-=5;
+                        if (stress-10<0)
+                        {
+                            stress=0;
+                        }else{
+                            stress-=5;
+                        }
+                    }
+                    getch();
+                    nodelay(stdscr, TRUE);
+                    
                 }else if (choice == 2)
                 {
                     is_sleep = true;
                     stress = 100;
                 }
-                
-                mvprintw(10,0,"You selected: %s\n", choices[btn_selected]);
+
                 refresh();
                 break;
 

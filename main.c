@@ -5,6 +5,7 @@
 #include "save.h"
 #include "screen.h"
 #include "pet.h"
+#include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -23,6 +24,7 @@ int main(int argc, char **argv)
     setlocale(LC_ALL, "");  //enables c to process nnon standard char
 
     initscr();  //enter ncurses mode
+    srand(time(NULL));
     cbreak();   //characters are saved in a buffer intil press enter
     noecho();   //disables automatic printing of keys
     curs_set(0);    //hide blinking cursor
