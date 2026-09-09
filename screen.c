@@ -7,11 +7,15 @@
 #include "pet.h"
 
 #define MENU_COUNT 3
-#define ACTION_COUNT 3
 #define STATE_MENU 0
 #define STATE_GAME 1
 #define GAME_BTNS 4
 #define STATE_QUIT 2
+
+extern char pet_name[50];
+extern int hunger;
+extern int happiness;
+extern int stress;
 
 int draw_menu(void){
 
@@ -170,16 +174,17 @@ int draw_game(void){
 
                 } else if (choice == 0)
                 {
+                    hunger=100;
                     is_sleep=false;
                 }else if (choice == 1)
                 {
                     //minigame
+                    happiness=100;
+                    is_sleep=false;
                 }else if (choice == 2)
                 {
                     is_sleep = true;
-                }else
-                {
-                    is_sleep = false;
+                    stress = 100;
                 }
                 
                 mvprintw(10,0,"You selected: %s\n", choices[btn_selected]);

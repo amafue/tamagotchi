@@ -19,7 +19,7 @@ int stress;
 
 int main(int argc, char **argv)
 {
-    int draw_game(char pet_name[], int hunger, int happiness, int stress);
+    int draw_game();
     setlocale(LC_ALL, "");  //enables c to process nnon standard char
 
     initscr();  //enter ncurses mode
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
                 stress-=5;
                 last_strs_update = now;
             }
-            if(now - last_happ_update >= 10)
+            if(now - last_happ_update >= 15)
             {
                 happiness-=5;
                 last_happ_update = now;
@@ -66,11 +66,11 @@ int main(int argc, char **argv)
         } else if (state == STATE_GAME)
         {
             nodelay(stdscr, TRUE);
-            state = draw_game(pet_name, hunger, happiness, stress);
+            state = draw_game();
         }
         
         refresh();
-        napms(100);   //pause for 50 mls
+        napms(100);   //pause for 100 mls
     }
 
     endwin();    //leave ncurses mode
