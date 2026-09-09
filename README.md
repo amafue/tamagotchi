@@ -84,3 +84,7 @@ The hardest thing was having to learn and work with ncurses simultaneously as I 
 * [ ] Pet dying if not taken well cared
 * [ ] More minigames
 * [ ] Improve the whole sleeping feature
+      
+---
+## Demo
+![Tamagotchi Demo](demo.gif)
