@@ -41,17 +41,17 @@ int main(int argc, char **argv)
         if (state == STATE_GAME)
         {
             time_t now = time(NULL);
-            if (now - last_hun_update >= 20)
+            if (now - last_hun_update >= 5)
             {
                 hunger-=5;
                 last_hun_update = now;
             }
-            if (now - last_strs_update >= 25)
+            if (now - last_strs_update >= 7)
             {
                 stress-=5;
                 last_strs_update = now;
             }
-            if(now - last_happ_update >= 15)
+            if(now - last_happ_update >= 8)
             {
                 happiness-=5;
                 last_happ_update = now;
@@ -72,7 +72,7 @@ int main(int argc, char **argv)
         }
         
         refresh();
-        napms(100);   //pause for 100 mls
+        napms(50);   //pause for 100 mls
     }
 
     endwin();    //leave ncurses mode
