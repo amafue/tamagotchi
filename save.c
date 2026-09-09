@@ -12,10 +12,6 @@ void load_game(void){
     FILE *file = fopen("gameplay.txt", "r");
 
     if (file == NULL) return;
-    {
-        /* code */
-    }
-    
 
     char text[150];
     
