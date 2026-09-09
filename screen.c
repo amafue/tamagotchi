@@ -13,8 +13,6 @@
 #define GAME_BTNS 4
 #define STATE_QUIT 2
 
-int draw_menu(void);
-
 int draw_menu(void){
 
     keypad(stdscr, TRUE);
@@ -48,7 +46,6 @@ int draw_menu(void){
 
     mvprintw(8, 2, "UP/DOWN arrows to move, ENTER to select");
     refresh();
-
     input = getch();
 
     switch (input)
@@ -76,7 +73,6 @@ int draw_menu(void){
         if (choice == 2)
         {
             return STATE_QUIT;    
-        return 0;
         }else if (choice == 1)
         {
             load_game();
@@ -97,7 +93,7 @@ int draw_menu(void){
     
 // }
 
-int draw_game(char pet_name[], int hunger, int happiness, int stress){
+int draw_game(void){
 
     keypad(stdscr, TRUE);
     cbreak();   
@@ -116,9 +112,9 @@ int draw_game(char pet_name[], int hunger, int happiness, int stress){
     };
 
     static bool is_sleep = false;
-    bool is_happy = (happiness>70);
+    bool is_happy = (happiness>75);
     bool is_hungry = (hunger<30);
-    bool is_stress = (stress>70);
+    bool is_stress = (stress<70);
 
     render_pet(is_happy,is_hungry,is_sleep, is_stress);
 
@@ -141,6 +137,8 @@ int draw_game(char pet_name[], int hunger, int happiness, int stress){
     }
 
     refresh();
+
+    nodelay(stdscr, TRUE);
 
     input =getch();
 
@@ -170,9 +168,20 @@ int draw_game(char pet_name[], int hunger, int happiness, int stress){
                 {
                     return STATE_MENU;
 
+                } else if (choice == 0)
+                {
+                    is_sleep=false;
+                }else if (choice == 1)
+                {
+                    //minigame
+                }else if (choice == 2)
+                {
+                    is_sleep = true;
+                }else
+                {
+                    is_sleep = false;
                 }
                 
-                    
                 mvprintw(10,0,"You selected: %s\n", choices[btn_selected]);
                 refresh();
                 break;

@@ -5,6 +5,8 @@
 #include "save.h"
 #include "screen.h"
 #include "pet.h"
+#include <time.h>
+#include <unistd.h>
 
 #define STATE_MENU 0
 #define STATE_GAME 1
@@ -18,8 +20,6 @@ int stress;
 int main(int argc, char **argv)
 {
     int draw_game(char pet_name[], int hunger, int happiness, int stress);
-    
-
     setlocale(LC_ALL, "");  //enables c to process nnon standard char
 
     initscr();  //enter ncurses mode
@@ -29,27 +29,49 @@ int main(int argc, char **argv)
     keypad(stdscr, TRUE);   //enables capture special keys input, like arrow keys
  
     int state = STATE_MENU; //remembers which is screen is active (menu/game)
+    time_t last_hun_update = time(NULL);
+    time_t last_strs_update=time(NULL);
+    time_t last_happ_update=time(NULL);
 
     while (state != STATE_QUIT)
     {
+
+        if (state == STATE_GAME)
+        {
+            time_t now = time(NULL);
+            if (now - last_hun_update >= 20)
+            {
+                hunger-=5;
+                last_hun_update = now;
+            }
+            if (now - last_strs_update >= 25)
+            {
+                stress-=5;
+                last_strs_update = now;
+            }
+            if(now - last_happ_update >= 10)
+            {
+                happiness-=5;
+                last_happ_update = now;
+            }
+        }
+
         clear();
 
         if (state== STATE_MENU)
         {
+            nodelay(stdscr, FALSE);
             state = draw_menu();
 
         } else if (state == STATE_GAME)
         {
+            nodelay(stdscr, TRUE);
             state = draw_game(pet_name, hunger, happiness, stress);
         }
         
         refresh();
+        napms(100);   //pause for 50 mls
     }
-    
-    
-    refresh();  //push changes to the visible screen
-
-    // getch();    //wait for user input
 
     endwin();    //leave ncurses mode
     return 0;
