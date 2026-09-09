@@ -3,5 +3,6 @@
 
 int draw_menu(void);
 int draw_game(void);
+void draw_naming_pet(void);
 
 #endif

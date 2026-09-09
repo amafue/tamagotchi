@@ -22,6 +22,7 @@ extern int stress;
 
 int draw_menu(void){
 
+    void draw_naming_pet(void);
     keypad(stdscr, TRUE);
     cbreak();   
     noecho();  
@@ -88,6 +89,7 @@ int draw_menu(void){
         } else if (choice == 0)
         {
             new_game();
+            draw_naming_pet();
             return STATE_GAME;
         }
     default:    
@@ -96,9 +98,14 @@ int draw_menu(void){
     return STATE_MENU;
 }
 
-// char naming_pet(){
-    
-// }
+void draw_naming_pet(void){
+    mvprintw(10,0,"Give a name to your pet:\n");
+    echo();
+    curs_set(1);
+    mvgetnstr(12,0, pet_name, sizeof(pet_name)-1);
+    noecho();
+    curs_set(0);
+}
 
 int draw_game(void){
 
